@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="81">
+  <server artifactsdir="artifacts" commandRepositoryLocation="default" serverId="4e610a3b-183c-444d-b25d-0902a1c2a2cb" />
+  <pipelines group="DemoPipeline">
+    <pipeline name="Demo" template="DemoTemplate">
+      <materials>
+        <git url="https://github.com/mikekwright/docker-gocd-demo.git" />
+      </materials>
+    </pipeline>
+  </pipelines>
+  <templates>
+    <pipeline name="DemoTemplate">
+      <stage name="Setup">
+        <environmentvariables>
+          <variable name="CI">
+            <value>Y</value>
+          </variable>
+        </environmentvariables>
+        <jobs>
+          <job name="setup-env" timeout="5">
+            <tasks>
+              <exec command="./setup">
+                <runif status="passed" />
+              </exec>
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+      <stage name="Build">
+        <environmentvariables>
+          <variable name="CI">
+            <value>Y</value>
+          </variable>
+        </environmentvariables>
+        <jobs>
+          <job name="run-build">
+            <tasks>
+              <exec command="./build" />
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+      <stage name="Deploy">
+        <approval type="manual" />
+        <environmentvariables>
+          <variable name="CI">
+            <value>Y</value>
+          </variable>
+        </environmentvariables>
+        <jobs>
+          <job name="run-deploy">
+            <tasks>
+              <exec command="./deploy" />
+            </tasks>
+          </job>
+        </jobs>
+      </stage>
+    </pipeline>
+  </templates>
+  <agents>
+    <agent hostname="1220a7b43726" ipaddress="172.17.0.3" uuid="4ba150e9-6b13-4809-a5f4-3b5f56e56ab2" />
+  </agents>
+</cruise>
+

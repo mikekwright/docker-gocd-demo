@@ -1,1 +1,2 @@
-server-files
+*server-files
+!server-files/config/cruise-config.xml
