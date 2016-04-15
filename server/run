@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# vi: ft=sh
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+SERVER_IMAGE=gocd-server
+SERVER_CONTAINER=gocd-server
+SERVER_PORT=11001
+
+DB_SERVER_PATH=$SCRIPT_DIR/../server-files/db
+CONFIG_SERVER_PATH=$SCRIPT_DIR/../server-files/config
+ARTIFACTS_SERVER_PATH=$SCRIPT_DIR/../server-files/artifacts
+
+is_running() {
+  local container=$1
+  local output=$(docker ps | grep "$container")
+  result=$?
+  if [[ $result -ne 0 ]]; then
+    echo -en "N"
+  else 
+    echo -en "Y"
+  fi
+}
+
+kill_and_clean() {
+  local container=$1
+  docker kill $container 2>&1 >> /dev/null
+  docker rm -v $container 2>&1 >> /dev/null
+}
+
+build_server() {
+  docker build -t $SERVER_IMAGE .
+}
+
+start_server() {
+  docker run --name $SERVER_CONTAINER -p $SERVER_PORT:8080 -v $DB_SERVER_PATH:/go-server/work/db -v $CONFIG_SERVER_PATH:/go-server/config -v $ARTIFACTS_SERVER_PATH:/go-server/work/artifacts -d $SERVER_IMAGE
+}
+
+kill_and_clean $SERVER_CONTAINER
+build_server
+start_server
+
