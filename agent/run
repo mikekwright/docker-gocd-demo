@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# vi: ft=sh
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+AGENT_IMAGE=gocd-agent
+AGENT_CONTAINER=gocd-agent
+GO_SERVER_PORT=8153
+GO_SERVER_CONTAINER=gocd-server
+
+is_running() {
+  local container=$1
+  local output=$(docker ps | grep "$container")
+  result=$?
+  if [[ $result -ne 0 ]]; then
+    echo -en "N"
+  else 
+    echo -en "Y"
+  fi
+}
+
+kill_and_clean() {
+  local container=$1
+  docker kill $container 2>&1 >> /dev/null
+  docker rm -v $container 2>&1 >> /dev/null
+}
+
+build_agent() {
+  docker build -t $AGENT_IMAGE .
+}
+
+find_docker_ip() {
+  ip=$(echo $DOCKER_HOST | sed 's/[\:\/]/\ /g' | awk '{ print $2  }')
+  if [ -z "$ip" ]; then
+    echo -en "localhost"
+  else
+    echo -en "$ip"
+  fi
+}
+
+start_agent() {
+  #docker run --name $AGENT_CONTAINER --link $GO_SERVER_CONTAINER:go-server -d $AGENT_IMAGE
+  docker run --name $AGENT_CONTAINER -e GO_SERVER=$(find_docker_ip) -e GO_SERVER_PORT=$GO_SERVER_PORT -v /var/run/docker.sock:/var/run/docker.sock -d $AGENT_IMAGE 
+}
+
+kill_and_clean $AGENT_CONTAINER
+build_agent
+start_agent
+

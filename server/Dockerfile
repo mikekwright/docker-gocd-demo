@@ -36,14 +36,14 @@ RUN mkdir -p /go-server/work/plugins/external && cd /go-server/work/plugins/exte
     curl -L -o docker-pipeline-plugin.jar "$DOCKER_PIPELINE"
 
 ENV DAEMON N
-ENV GO_SERVER_PORT 8080
+ENV GO_SERVER_PORT 8153
 ENV GO_SERVER_SSL 8154
 ENV SERVER_WORK_DIR /go-server/work
 
 ADD startup /go-server/startup
 ADD slack_notify.conf /root/go_notify.conf
 
-EXPOSE 8080
+EXPOSE 8153 8154
 
 WORKDIR /go-server
 CMD ["/go-server/startup"]

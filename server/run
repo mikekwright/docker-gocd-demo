@@ -4,7 +4,8 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 SERVER_IMAGE=gocd-server
 SERVER_CONTAINER=gocd-server
-SERVER_PORT=11001
+SERVER_PORT=8153
+SERVER_SSL_PORT=8154
 
 DB_SERVER_PATH=$SCRIPT_DIR/../server-files/db
 CONFIG_SERVER_PATH=$SCRIPT_DIR/../server-files/config
@@ -32,7 +33,7 @@ build_server() {
 }
 
 start_server() {
-  docker run --name $SERVER_CONTAINER -p $SERVER_PORT:8080 -v $DB_SERVER_PATH:/go-server/work/db -v $CONFIG_SERVER_PATH:/go-server/config -v $ARTIFACTS_SERVER_PATH:/go-server/work/artifacts -d $SERVER_IMAGE
+  docker run --name $SERVER_CONTAINER -p $SERVER_PORT:8153 -p $SERVER_SSL_PORT:8154 -v $DB_SERVER_PATH:/go-server/work/db -v $CONFIG_SERVER_PATH:/go-server/config -v $ARTIFACTS_SERVER_PATH:/go-server/work/artifacts -d $SERVER_IMAGE
 }
 
 kill_and_clean $SERVER_CONTAINER

@@ -2,7 +2,4 @@
 # vi: ft=sh
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-touch work/go-server.log
-tail -f work/go-server.log &
-
-./server.sh
+docker exec -it gocd-agent /bin/bash 

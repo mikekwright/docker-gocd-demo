@@ -2,5 +2,5 @@
 # vi: ft=sh
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-docker build -t gocd-server .
+./agent.sh
 
